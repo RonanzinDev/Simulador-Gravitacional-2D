@@ -1,0 +1,5 @@
+Inicializar o vetor
+Calcular forças
+Calcuar deslocamentis
+Colisoes
+Zeramento de forcas
