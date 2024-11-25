@@ -1,6 +1,7 @@
 ﻿using System.Windows.Forms;
 using System.Drawing;
 using System;
+using Microsoft.VisualBasic;
 
 namespace Simu
 {
@@ -72,43 +73,62 @@ namespace Simu
             this.btnContinuarSimulacao.Click += new EventHandler(this.ContinuarSimulacao);
             this.Controls.Add(this.btnContinuarSimulacao);
         }
-        // private void ContinuarSimulacao(object Sender, EventArgs e)
-        // {
-        //     count = 0;
-        //     universo = new();
-        //     universo.CarregarConfiguracao();
-        //     tempoEntreInteracoes = universo.tempoEntreInteracoes;
-        //     quantidadeInteracoes = universo.quantidadeInteracoes;
-        //     quantidadeCorpos = universo.qtdCorpos;
-        //     InitializeTimer(tempoEntreInteracoes);
-        //     Invalidate();
-        // }
         private void ContinuarSimulacao(object Sender, EventArgs e)
         {
-            try
+            count = 1;
+            universo = new();
+            universo.CarregarConfiguracao();
+            if (this.txtQuantidadeCorpos.Text == "") this.txtQuantidadeCorpos.Text = universo.qtdCorpos.ToString();
+            if (this.txtQuantidadeInteracoes.Text == "") this.txtQuantidadeInteracoes.Text = universo.quantidadeInteracoes.ToString();
+            if (this.txtTempoEntreInteracoes.Text == "") this.txtTempoEntreInteracoes.Text = universo.tempoEntreInteracoes.ToString();
+            if (!int.TryParse(txtQuantidadeCorpos.Text, out quantidadeCorpos) || quantidadeCorpos <= 0)
             {
-                count = 0;
-
-                // Carrega a configuração do universo
-                universo.CarregarConfiguracao();
-
-
-                // Inicializa o timer com o intervalo configurado
-                InitializeTimer(universo.tempoEntreInteracoes);
-
-                // Revalida a tela
-                Invalidate();
+                MessageBox.Show("Digite uma quantidade válida de corpos.");
+                return;
             }
-            catch (Exception ex)
+
+            if (!int.TryParse(txtQuantidadeInteracoes.Text, out quantidadeInteracoes) || quantidadeInteracoes <= 0)
             {
-                MessageBox.Show($"Erro ao continuar simulação: {ex.Message}");
+                MessageBox.Show("Digite uma quantidade válida de interações.");
+                return;
             }
+
+            if (!int.TryParse(txtTempoEntreInteracoes.Text, out tempoEntreInteracoes) || tempoEntreInteracoes <= 0)
+            {
+                MessageBox.Show("Digite um tempo válido entre interações (em milissegundos).");
+                return;
+            }
+            if (tempoEntreInteracoes != universo.tempoEntreInteracoes)
+            {
+                universo.tempoEntreInteracoes = tempoEntreInteracoes;
+            }
+            else
+            {
+                tempoEntreInteracoes = universo.tempoEntreInteracoes;
+            }
+            if (quantidadeInteracoes != universo.quantidadeInteracoes)
+            {
+                universo.quantidadeInteracoes = quantidadeInteracoes;
+            }
+            else
+            {
+                quantidadeInteracoes = universo.quantidadeInteracoes;
+            }
+            if (quantidadeCorpos != universo.qtdCorpos)
+            {
+                universo.qtdCorpos = quantidadeCorpos;
+            }
+            else
+            {
+                quantidadeCorpos = universo.qtdCorpos;
+            }
+
+            InitializeTimer(tempoEntreInteracoes);
+            Invalidate();
         }
         private void btnIniciarSimulacao_Click(object Sender, EventArgs e)
         {
-            count = 0;
-
-
+            count = 1;
             if (!int.TryParse(txtQuantidadeCorpos.Text, out quantidadeCorpos) || quantidadeCorpos <= 0)
             {
                 MessageBox.Show("Digite uma quantidade válida de corpos.");
@@ -181,7 +201,7 @@ namespace Simu
 
                     e.Graphics.FillEllipse(Brushes.Black, posX - raioEscalado, posY - raioEscalado, raioEscalado * 2, raioEscalado * 2);
 
-                    SizeF textSize = e.Graphics.MeasureString($"{corpo.Raio:F2}", this.Font);
+                    SizeF textSize = e.Graphics.MeasureString($"{corpo.Nome}", this.Font);
                     e.Graphics.DrawString($"{corpo.PosX}", this.Font, Brushes.Red, posX - textSize.Width / 2, posY - textSize.Height / 2);
                 }
             }
@@ -202,7 +222,6 @@ namespace Simu
         {
             if (count <= quantidadeInteracoes)
             {
-                Console.WriteLine(count);
                 universo.CalculoInteracoesGravitacionais();
                 universo.SalvarConfiguracao();
                 Invalidate();

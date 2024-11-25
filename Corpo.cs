@@ -31,7 +31,7 @@ public class Corpo
         ForcaY = forY;
 
     }
-      public Corpo(string nome, double massa, double densidade, double raio, double posX, double posY, double velX, double velY, double forX, double forY)
+      public Corpo(string nome, double massa, double densidade, double raio, double posX, double posY, double velX, double velY)
     {
         Nome = nome;
         Massa = massa;
@@ -41,8 +41,6 @@ public class Corpo
         PosY = posY;
         VelX = velX;
         VelY = velY;
-        ForcaX = forX;
-        ForcaY = forY;
 
     }
 

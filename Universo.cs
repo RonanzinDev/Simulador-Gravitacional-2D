@@ -13,8 +13,6 @@ public class Universo
 
     public void CalculoInteracoesGravitacionais()
     {
-        const double deltaTime = 10.0; // Escala de tempo para acelerar o movimento
-        const double escalaVelocidade = 10.0; // Escala visual da velocidade
         foreach (Corpo corpo in Corpos)
         {
             corpo.ForcaX = 0;
@@ -31,7 +29,6 @@ public class Universo
                 double distancia = Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
                 if (distancia <= corpoA.Raio + corpoB.Raio)
                 {
-                    Console.WriteLine("Houve colisão");
                     corpoA += corpoB;
                     RemoverCorpo(corpoB);
                     j--;
@@ -53,17 +50,29 @@ public class Universo
 
         foreach (var corpo in Corpos)
         {
-            double acelX = corpo.ForcaX / corpo.Massa;
-            double acelY = corpo.ForcaY / corpo.Massa;
 
-            corpo.VelX += acelX * deltaTime;
-            corpo.VelY += acelY * deltaTime;
 
-            corpo.PosX += corpo.VelX * escalaVelocidade;
-            corpo.PosY += corpo.VelY * escalaVelocidade;
+            // corpo.PosX += corpo.VelX * escalaVelocidade;
+            // corpo.PosY += corpo.VelY * escalaVelocidade;
+            Parallel.Invoke(() => CalculasPosX(corpo), () => CalculasPosY(corpo));
         }
     }
+    const double escalaVelocidade = 10.0; // Escala visual da velocidade
+    const double deltaTime = 10.0; // Escala de tempo para acelerar o movimento
+    public void CalculasPosX(Corpo corpo)
+    {
+        double acelX = corpo.ForcaX / corpo.Massa;
+        corpo.VelX += acelX * deltaTime;
+        corpo.PosX += corpo.VelX * escalaVelocidade;
 
+    }
+    public void CalculasPosY(Corpo corpo)
+    {
+        double acelY = corpo.ForcaY / corpo.Massa;
+        corpo.VelY += acelY * deltaTime;
+        corpo.PosY += corpo.VelY * escalaVelocidade;
+
+    }
     public bool ExistirCorpoNoLugar(double posX, double posY)
     {
         foreach (var corpo in Corpos)
@@ -90,7 +99,7 @@ public class Universo
             {
                 if (corpo != null)
                 {
-                    writer.WriteLine($"{corpo.Nome};{corpo.Massa};{corpo.Densidade};{corpo.Raio};{corpo.PosX};{corpo.PosY};{corpo.VelX};{corpo.VelY};{corpo.ForcaX};{corpo.ForcaX}");
+                    writer.WriteLine($"{corpo.Nome};{corpo.Massa};{corpo.Densidade};{corpo.Raio};{corpo.PosX};{corpo.PosY};{corpo.VelX};{corpo.VelY}");
                 }
             }
         }
@@ -113,17 +122,14 @@ public class Universo
                 string[] dados = linha.Split(';');
                 string nome = dados[0];
                 double massa = double.Parse(dados[1]);
-                double raio = double.Parse(dados[2]);
-                double densidade = double.Parse(dados[3]);
+                double densidade = double.Parse(dados[2]);
+                double raio = double.Parse(dados[3]);
                 double posX = double.Parse(dados[4]);
                 double posY = double.Parse(dados[5]);
-                Console.WriteLine(posY);
                 double velX = double.Parse(dados[6]);
                 double velY = double.Parse(dados[7]);
-                double forX = double.Parse(dados[8]);
-                double forY = double.Parse(dados[9]);
 
-                Corpos[index] = new Corpo(nome, massa, densidade, raio, posX, posY, velX, velY, forX, forY);
+                Corpos[index] = new Corpo(nome, massa, densidade, raio, posX, posY, velX, velY);
                 index++;
             }
         }
